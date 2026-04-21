@@ -2,32 +2,56 @@ import { useState } from "react"
 import Sidebar from "../components/layout/Sidebar"
 import Header from "../components/layout/Header"
 import { useLogs } from "../hooks/useLogs"
-
+import { updateLog, deleteLog } from "../services/api"
+import { Pencil, Trash2 } from "lucide-react"
+import { X, Save } from "lucide-react"
 export default function Meetings() {
 
-  const [open, setOpen] = useState(false)
+  const { logs, refresh } = useLogs()
 
-  const { logs } = useLogs()
+  const [editingLog, setEditingLog] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
 
-  // Only meetings + support
   const meetingLogs = logs.filter(log =>
-    log.tag.includes("meeting") ||
-    log.tag.includes("support")
+    (log.tag || "").includes("meeting") ||
+    (log.tag || "").includes("support")
   )
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete?")) return
+
+    try {
+      setLoading(true)
+      await deleteLog(id)
+      await refresh()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleUpdate = async () => {
+    if (!editingLog) return
+
+    try {
+      setLoading(true)
+      await updateLog(editingLog.id, editingLog)
+      await refresh()
+      setEditingLog(null)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="app-layout">
-
-      <Sidebar open={open} />
-
+      <Sidebar open={false} />
       <main className="main-content">
-
         <Header />
 
         <div className="dashboard-container">
 
           <div className="section-title">
-            Complete Meeting & Support Log
+            Meetings & Support
           </div>
 
           <div className="data-table-wrapper">
@@ -37,74 +61,133 @@ export default function Meetings() {
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Subject / Task</th>
-                  <th>Application</th>
+                  <th>Title</th>
+                  <th>App</th>
                   <th>Type</th>
                   <th>Duration</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
 
               <tbody>
 
-                {meetingLogs.length === 0 && (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: "center" }}>
-                      No meetings or support logged.
-                    </td>
-                  </tr>
-                )}
-
-                {meetingLogs.map((log) => (
+                {meetingLogs.map(log => (
 
                   <tr key={log.id}>
 
                     <td>
-                      {new Date(log.date).toLocaleDateString()}
+                      {log.date ? new Date(log.date).toLocaleDateString() : "-"}
                     </td>
 
-                    <td style={{ fontWeight: 500 }}>
-                      {log.title}
-                    </td>
+                    <td>{log.title}</td>
+                    <td>{log.app}</td>
 
-                    <td style={{ color: "var(--status-info)" }}>
-                      {log.app}
-                    </td>
-
-                    <td>
-                      <span className={`badge ${log.tag}`}>
-                        {formatTag(log.tag)}
-                      </span>
-                    </td>
+                    <td>{log.tag}</td>
 
                     <td>{log.duration}h</td>
 
-                  </tr>
+                    <td>
+                      <td style={{ display: "flex", gap: "10px" }}>
+                        <button className="icon-btn" onClick={() => setEditingLog(log)}>
+                          <Pencil size={16} />
+                        </button>
 
+                        <button className="icon-btn danger" onClick={() => handleDelete(log.id)}>
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </td>
+
+                  </tr>
                 ))}
 
               </tbody>
-
             </table>
+          </div>
+        </div>
+      </main>
+
+      {/* MODAL */}
+      {editingLog && (
+        <div className="modal-overlay">
+
+          <div className="modal-box">
+
+            {/* HEADER */}
+            <div className="modal-header">
+              <h3>Edit Task</h3>
+              <button onClick={() => setEditingLog(null)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* BODY */}
+            <div className="modal-body">
+
+              <input
+                className="form-control"
+                placeholder="Task title"
+                value={editingLog.title}
+                onChange={(e) =>
+                  setEditingLog({ ...editingLog, title: e.target.value })
+                }
+              />
+
+              <input
+                className="form-control"
+                placeholder="Application"
+                value={editingLog.app}
+                onChange={(e) =>
+                  setEditingLog({ ...editingLog, app: e.target.value })
+                }
+              />
+
+              <select
+                className="form-control"
+                value={editingLog.status}
+                onChange={(e) =>
+                  setEditingLog({ ...editingLog, status: e.target.value })
+                }
+              >
+                <option>Completed</option>
+                <option>WIP</option>
+                <option>Blocked</option>
+              </select>
+
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Duration"
+                value={editingLog.duration}
+                onChange={(e) =>
+                  setEditingLog({
+                    ...editingLog,
+                    duration: Number(e.target.value),
+                  })
+                }
+              />
+
+            </div>
+
+            {/* FOOTER */}
+            <div className="modal-footer">
+
+              <button className="btn-cancel" onClick={() => setEditingLog(null)}>
+                Cancel
+              </button>
+
+              <button className="btn-save" onClick={handleUpdate}>
+                <Save size={16} />
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+
+            </div>
 
           </div>
 
         </div>
-
-      </main>
+      )}
 
     </div>
   )
-}
-
-// Helper function for clean labels
-function formatTag(tag: string) {
-
-  const map: Record<string, string> = {
-    meeting: "Meeting",
-    meeting_support: "Meeting Support",
-    junior_support: "Junior Support",
-    query_prep: "Query Prep",
-  }
-
-  return map[tag] || tag
 }

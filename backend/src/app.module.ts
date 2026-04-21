@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LogsModule } from './logs/logs.module';
 import { ConfigModule } from '@nestjs/config';
-
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: '.env', // ✅ reads from backend/.env
     }),
     LogsModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

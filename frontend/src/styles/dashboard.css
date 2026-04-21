@@ -731,3 +731,193 @@ body.light-mode .data-table th {
     width: 100%;
     height: 100%;
 }
+/* OVERLAY */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 200;
+
+  animation: fadeIn 0.2s ease;
+}
+
+/* BOX */
+.modal-box {
+  width: 380px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+
+  padding: 20px;
+
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+
+  animation: scaleIn 0.2s ease;
+}
+
+/* HEADER */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 16px;
+}
+
+.modal-header h3 {
+  font-size: 1.1rem;
+}
+
+.modal-header button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* BODY */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* FOOTER */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  margin-top: 16px;
+}
+
+/* BUTTONS */
+.btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.btn-save {
+  background: var(--accent-primary);
+  color: white;
+
+  border: none;
+  padding: 8px 16px;
+
+  border-radius: var(--radius-md);
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  background: var(--accent-hover);
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.icon-btn {
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.icon-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.icon-btn.danger:hover {
+  border-color: var(--status-danger);
+  color: var(--status-danger);
+}
+
+/* LOGIN PAGE */
+
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(135deg, #0a0a0a, #111827);
+}
+
+.login-card {
+  width: 360px;
+  background: rgba(20,20,20,0.85);
+  backdrop-filter: blur(20px);
+
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+
+  padding: 30px;
+
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+
+  text-align: center;
+}
+
+.login-card h2 {
+  margin-bottom: 6px;
+}
+
+.login-card p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* button override */
+.login-card .btn-submit {
+  margin-top: 10px;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  margin-left: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn:hover {
+  color: var(--status-danger);
+}

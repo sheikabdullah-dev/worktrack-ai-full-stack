@@ -18,17 +18,18 @@ export const useLogs = () => {
   }
 
   const addLog = async (log: any) => {
-    try {
-      await createLog(log)
-      await loadLogs() // 🔥 auto refresh
-    } catch (err) {
-      console.error("Error adding log", err)
-    }
+    await createLog(log)
+    await loadLogs()
   }
 
   useEffect(() => {
     loadLogs()
   }, [])
 
-  return { logs, addLog, loading }
+  return {
+    logs,
+    addLog,
+    loading,
+    refresh: loadLogs // ✅ IMPORTANT
+  }
 }

@@ -18,5 +18,14 @@ export const getLogs = async () => {
 export const createLog = async (data: any) => {
   return api.post("/logs", data)
 }
+// ✅ UPDATE
+export const updateLog = async (id: string, data: any) => {
+  return api.put(`/logs/${id}`, data)
+}
+
+// ✅ DELETE
+export const deleteLog = async (id: string) => {
+  return api.delete(`/logs/${id}`)
+}
 
 export default api
